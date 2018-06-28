@@ -11,8 +11,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/finfou/androidbinary"
 	"github.com/pkg/errors"
+	"github.com/shogo82148/androidbinary"
 )
 
 // Apk is an application package file for android.
@@ -46,49 +46,8 @@ func OpenFile(filename string) (apk *Apk, err error) {
 	return
 }
 
-// OpenFile1 only process Manifest and skip resources
-func OpenFile1(filename string) (apk *Apk, err error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err != nil {
-			f.Close()
-		}
-	}()
-	fi, err := f.Stat()
-	if err != nil {
-		return nil, err
-	}
-	apk, err = OpenZipReader1(f, fi.Size())
-	if err != nil {
-		return nil, err
-	}
-	apk.f = f
-	return
-}
-
 // OpenZipReader has same arguments like zip.NewReader
 func OpenZipReader(r io.ReaderAt, size int64) (*Apk, error) {
-	zipreader, err := zip.NewReader(r, size)
-	if err != nil {
-		return nil, err
-	}
-	apk := &Apk{
-		zipreader: zipreader,
-	}
-	if err = apk.parseManifest(); err != nil {
-		return nil, errors.Wrap(err, "parse-manifest")
-	}
-	if err = apk.parseResources(); err != nil {
-		return nil, err
-	}
-	return apk, nil
-}
-
-// OpenZipReader1 deoesn't parse resources
-func OpenZipReader1(r io.ReaderAt, size int64) (*Apk, error) {
 	zipreader, err := zip.NewReader(r, size)
 	if err != nil {
 		return nil, err
