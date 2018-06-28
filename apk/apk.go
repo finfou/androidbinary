@@ -99,9 +99,9 @@ func OpenZipReader1(r io.ReaderAt, size int64) (*Apk, error) {
 	if err = apk.parseManifest(); err != nil {
 		return nil, errors.Wrap(err, "parse-manifest")
 	}
-	// if err = apk.parseResources(); err != nil {
-	// 	return nil, err
-	// }
+	if err = apk.parseResources(); err != nil {
+		return nil, err
+	}
 	return apk, nil
 }
 
